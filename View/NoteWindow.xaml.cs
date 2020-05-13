@@ -35,7 +35,8 @@ namespace NotesApp.View
             // I tried an alternative which returned "en-AU" for my computer but this also crashed.
             var currentCulture = System.Globalization.CultureInfo.CurrentCulture;
 
-                recognizer = new SpeechRecognitionEngine();
+                recognizer = new SpeechRecognitionEngine(new System.Globalization.CultureInfo("en-US"));
+            recognizer.SetInputToDefaultAudioDevice();
 
             //When I left the SpeechRecognitionEngine as blank / default, it then crashed on the next line.
 
