@@ -23,6 +23,11 @@
                           Click="MenuItem_Click" />
             </MenuItem>
         </Menu>
+        <StatusBar DockPanel.Dock="Bottom" >
+            <StatusBarItem>
+                <TextBlock x:Name="tbStatus" />
+            </StatusBarItem>
+        </StatusBar>
         <ListView Width="140"
                   DockPanel.Dock="Left"
                   SelectedItem="{Binding SelectedNotebook, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
@@ -45,10 +50,24 @@
         <ToolBarTray DockPanel.Dock="Top">
             <ToolBar>
                 <Button Content="Speech"
-                        Click="Button_Click" />
+                        Click="SpeechButton_Click" />
+                <Button x:Name="btnBold"
+                        Click="btnBold_Click"
+                        Content="B"
+                        FontWeight="Bold" />
+                <Button Content="I"
+                        x:Name="btnItalic"
+                        Click="btnItalic_Click"
+                        FontStyle="Italic" />
+                <Button Content="U"
+                        x:Name="btnUnderline"
+                        Click="btnUnderline_Click"
+                         />
             </ToolBar>
         </ToolBarTray>
         <Grid>
+            <RichTextBox x:Name="rtbContent"
+                         TextChanged="rtbContent_TextChanged" />
         </Grid>
     </DockPanel>
 </Window>
