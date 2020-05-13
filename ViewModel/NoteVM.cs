@@ -65,6 +65,7 @@ namespace NotesApp.ViewModel
 		{
 			using (SQLite.SQLiteConnection conn = new SQLite.SQLiteConnection(DatabaseHelper.dbFile))
 			{
+				conn.CreateTable<Notebook>();
 				var notebooks = conn.Table<Notebook>().ToList();
 				Notebooks.Clear();
 				foreach(var notebook in notebooks)
