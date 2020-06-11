@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:NotesApp.View"
         xmlns:vm="clr-namespace:NotesApp.ViewModel"
+        xmlns:uc="clr-namespace:NotesApp.View.UserControls"
         mc:Ignorable="d"
         Title="NoteWindow" Height="400" Width="600">
     <Window.Resources>
@@ -29,44 +30,62 @@
             </StatusBarItem>
         </StatusBar>
         <ListView Width="140"
+                  Background="MidnightBlue"
                   DockPanel.Dock="Left"
                   SelectedItem="{Binding SelectedNotebook, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                   ItemsSource="{Binding Notebooks}">
             <ListView.ItemTemplate>
                 <DataTemplate>
-                    <TextBlock Text="{Binding Name}" />
+                    <uc:NotebookUC DisplayNotebook="{Binding}" />
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
         <ListView Width="140"
                   DockPanel.Dock="Left"
-                  ItemsSource="{Binding Notes}">
+                  ItemsSource="{Binding Notes}" >
             <ListView.ItemTemplate>
                 <DataTemplate>
-                    <TextBlock Text="{Binding Title}" />
+                    <uc:NotesUC Note="{Binding}" />
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
         <ToolBarTray DockPanel.Dock="Top">
             <ToolBar>
-                <Button Content="Speech"
+                <ToggleButton Content="Speech"
                         Click="SpeechButton_Click" />
-                <Button x:Name="btnBold"
-                        Click="btnBold_Click"
-                        Content="B"
+                <ToggleButton
+                    x:Name="btnBold"
+                    Click="btnBold_Click" >
+                    <TextBlock
+                        Text="B"
                         FontWeight="Bold" />
-                <Button Content="I"
-                        x:Name="btnItalic"
-                        Click="btnItalic_Click"
+                </ToggleButton>
+                <ToggleButton
+                    x:Name="btnItalic"
+                    Click="btnItalic_Click" >
+                    <TextBlock
+                        Text="I"
                         FontStyle="Italic" />
-                <Button Content="U"
-                        x:Name="btnUnderline"
-                        Click="btnUnderline_Click"
-                         />
+                </ToggleButton>
+                <ToggleButton
+                    x:Name="btnUnderline"
+                    Click="btnUnderline_Click" >
+                    <TextBlock
+                        Text="U"
+                        TextDecorations="Underline" />
+                </ToggleButton>
+                <ComboBox x:Name="cmbFontFamily"
+                          Width="100"
+                          SelectionChanged="cmbFontFamily_SelectionChanged" />
+                <ComboBox x:Name="cmbFontSize"
+                          Width="50"
+                          IsEditable="True"
+                          TextBoxBase.TextChanged="cmbFontSize_TextChanged" />
             </ToolBar>
         </ToolBarTray>
         <Grid>
             <RichTextBox x:Name="rtbContent"
+                         SelectionChanged="rtbContent_SelectionChanged"
                          TextChanged="rtbContent_TextChanged" />
         </Grid>
     </DockPanel>
