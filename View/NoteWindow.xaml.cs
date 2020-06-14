@@ -15,6 +15,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using Microsoft.Xaml.Behaviors;
 
 namespace NotesApp.View
 {
@@ -54,6 +55,17 @@ namespace NotesApp.View
 
             recognizer.LoadGrammar(grammar);
             recognizer.SpeechRecognized += Recognizer_SpeechRecognized;
+        }
+
+        protected override void OnActivated(EventArgs e)
+        {
+            base.OnActivated(e);
+
+            if (string.IsNullOrEmpty(App.UserID))
+            {
+                LoginWindow loginWindow = new LoginWindow();
+                loginWindow.ShowDialog();
+            }
         }
 
         private void Recognizer_SpeechRecognized(object sender, SpeechRecognizedEventArgs e)

@@ -4,18 +4,32 @@ using SQLite;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace NotesApp.ViewModel
 {
-	public class NoteVM
+	public class NoteVM : INotifyPropertyChanged
 	{
+		private bool isEditing;
+
+		public bool IsEditing
+		{
+			get { return isEditing; }
+			set
+			{
+				isEditing = value;
+				OnPropertyChanged(nameof(IsEditing));
+			}
+		}
+
 		public ObservableCollection<Notebook> Notebooks { get; set; }
 		public ObservableCollection<Note> Notes { get; set; }
 
 		private Notebook selectedNotebook;
+
 		public Notebook SelectedNotebook
 		{
 			get { return selectedNotebook; }
@@ -26,13 +40,32 @@ namespace NotesApp.ViewModel
 			}
 		}
 
+		private Note note;
+
+		public Note SelectedNote
+		{
+			get { return note; }
+			set { note = value; }
+		}
+
+
 		public NewNotebookCommand NewNotebookCommand { get; set; }
 		public NewNoteCommand NewNoteCommand { get; set; }
 
+		public BeginEditCommand BeginEditCommand { get; set; }
+
+		public HasEditedCommand HasEditedCommand { get; set; }
+
+		public event PropertyChangedEventHandler PropertyChanged;
+
 		public NoteVM()
 		{
+			IsEditing = false;
+
 			NewNotebookCommand = new NewNotebookCommand(this);
 			NewNoteCommand = new NewNoteCommand(this);
+			BeginEditCommand = new BeginEditCommand(this);
+			HasEditedCommand = new HasEditedCommand(this);
 
 			Notebooks = new ObservableCollection<Notebook>();
 			Notes = new ObservableCollection<Note>();
@@ -41,11 +74,20 @@ namespace NotesApp.ViewModel
 			ReadNotes();
 		}
 
+		private void OnPropertyChanged(string propertyName)
+		{
+			if(PropertyChanged != null)
+			{
+				PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+			}
+		}
+
 		public void CreateNotebook()
 		{
 			Notebook newNotebook = new Notebook()
 			{
-				Name = "New notebook"
+				Name = "New notebook",
+				UserId = int.Parse(App.UserID)
 			};
 			DatabaseHelper.Insert(newNotebook);
 
@@ -92,6 +134,21 @@ namespace NotesApp.ViewModel
 						Notes.Add(note);
 					}
 				}
+			}
+		}
+
+		public void StartEditing()
+		{
+			IsEditing = true;
+		}
+
+		public void HasRenamed(Notebook notebook)
+		{
+			if(notebook != null)
+			{
+				DatabaseHelper.Update(notebook);
+				IsEditing = false;
+				ReadNotebooks();
 			}
 		}
 	}
