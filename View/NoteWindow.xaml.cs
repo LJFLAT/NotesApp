@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Speech.Recognition;
 using System.Text;
@@ -16,6 +17,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using Microsoft.Xaml.Behaviors;
+using NotesApp.ViewModel;
 
 namespace NotesApp.View
 {
@@ -25,10 +27,15 @@ namespace NotesApp.View
     public partial class NoteWindow : Window
     {
         SpeechRecognitionEngine recognizer;
+        NoteVM viewModel;
 
         public NoteWindow()
         {
             InitializeComponent();
+
+            viewModel = new NoteVM();
+            container.DataContext = viewModel;
+            viewModel.SelectedNoteChanged += ViewModel_SelectedNoteChanged;
 
             var fontFamilies = Fonts.SystemFontFamilies.OrderBy(f => f.Source);
             cmbFontFamily.ItemsSource = fontFamilies;
@@ -161,7 +168,7 @@ namespace NotesApp.View
 
         private void cmbFontFamily_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if(cmbFontFamily.SelectedItem != null)
+            if (cmbFontFamily.SelectedItem != null)
             {
                 rtbContent.Selection.ApplyPropertyValue(Inline.FontFamilyProperty, cmbFontFamily.SelectedItem);
             }
@@ -170,6 +177,29 @@ namespace NotesApp.View
         private void cmbFontSize_TextChanged(object sender, TextChangedEventArgs e)
         {
             rtbContent.Selection.ApplyPropertyValue(Inline.FontSizeProperty, cmbFontSize.Text);
+        }
+
+        private void saveFileButton_Click(object sender, RoutedEventArgs e)
+        {
+            string rtfFile = System.IO.Path.Combine(Environment.CurrentDirectory, $"{viewModel.SelectedNote.Id}.rtf");
+            viewModel.SelectedNote.FileLocation = rtfFile;
+
+            FileStream fileStream = new FileStream(rtfFile, FileMode.Create);
+            TextRange range = new TextRange(rtbContent.Document.ContentStart, rtbContent.Document.ContentEnd);
+            range.Save(fileStream, DataFormats.Rtf);
+        }
+
+        private void ViewModel_SelectedNoteChanged(object sender, EventArgs e)
+        {
+            rtbContent.Document.Blocks.Clear();
+            if (!string.IsNullOrEmpty(viewModel.SelectedNote.FileLocation))
+            {
+                FileStream fileStream = new FileStream(viewModel.SelectedNote.FileLocation, FileMode.Open);
+                TextRange range = new TextRange(rtbContent.Document.ContentStart, rtbContent.Document.ContentEnd);
+                range.Load(fileStream, DataFormats.Rtf);
+
+                viewModel.UpdateSelectedNote();
+            }
         }
     }
 }

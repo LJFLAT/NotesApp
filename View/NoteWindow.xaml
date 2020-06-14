@@ -14,7 +14,8 @@
         <vm:NoteVM x:Key="vm" />
         <cv:BoolToVisConverter x:Key="boolToVis" />
     </Window.Resources>
-    <DockPanel DataContext="{StaticResource vm}">
+    
+    <DockPanel x:Name="container" >
         <Menu DockPanel.Dock="Top">
             <MenuItem Header="File">
                 <MenuItem Header="New notebook"
@@ -63,6 +64,7 @@
         </ListView>
         <ListView Width="140"
                   DockPanel.Dock="Left"
+                  SelectedItem="{Binding SelectedNote}"
                   ItemsSource="{Binding Notes}" >
             <ListView.ItemTemplate>
                 <DataTemplate>
@@ -102,6 +104,9 @@
                           Width="50"
                           IsEditable="True"
                           TextBoxBase.TextChanged="cmbFontSize_TextChanged" />
+                <Button Content="Save" 
+                        x:Name="saveFileButton"
+                        Click="saveFileButton_Click" />
             </ToolBar>
         </ToolBarTray>
         <Grid>
